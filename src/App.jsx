@@ -91,19 +91,22 @@ function App() {
       window.addEventListener('devicemotion', handleMotionEvent);
     }
 
-    if (lastX !== null || lastY !== null || lastZ !== null) {
-      setShakeInProgress(true);
-      const timer = setTimeout(() => setShakeInProgress(false), 300);
-      
-      return () => clearTimeout(timer);
-    }
-
     return () => {
       if (isPermissionGranted) {
         window.removeEventListener('devicemotion', handleMotionEvent);
       }
     };
-  }, [isPermissionGranted, lastX, lastY, lastZ]);
+  }, [isPermissionGranted]);
+
+  useEffect(() => {
+    if (lastX !== null || lastY !== null || lastZ !== null) {
+      setShakeInProgress(true);
+      const timer = setTimeout(() => setShakeInProgress(false), 300);
+
+      return () => clearTimeout(timer);
+    }
+  }, [lastX, lastY, lastZ])
+
 
   return (
     <div className={`w-full h-screen transition duration-300 ease-in-out ${shakeInProgress ? "bg-orange-400" : "bg-blue-300"} flex items-center justify-center`}>
