@@ -22,7 +22,7 @@ const App = () => {
           setIosDevice(true)
           alert("Click button to give permission")
         } else {
-          isPermissionSupported()
+          handlePermissionRequest()
         }
 
       }
@@ -55,26 +55,22 @@ const App = () => {
     }
   };
 
-  const isPermissionSupported = async () => {
+  const handlePermissionRequest = async () => {
     if (typeof (DeviceMotionEvent) !== 'undefined' && typeof (DeviceMotionEvent.requestPermission) === 'function') {
-      handlePermissionRequest()
+      try {
+        const response = await DeviceMotionEvent.requestPermission()
+        if (response == "granted") {
+          window.addEventListener("devicemotion", (event) => {
+            handleMotionEvent(event)
+          })
+        } else {
+          alert("Permission wasn't granted for Sensors API")
+        }
+      } catch (error) {
+        console.error(error)
+      }
     } else {
       alert("Sensors API is not supported on the device")
-    }
-  }
-
-  const handlePermissionRequest = async () => {
-    try {
-      const response = await DeviceMotionEvent.requestPermission()
-      if (response == "granted") {
-        window.addEventListener("devicemotion", (event) => {
-          handleMotionEvent(event)
-        })
-      } else {
-        alert("Permission wasn't granted for Sensors API")
-      }
-    } catch (error) {
-      console.error(error)
     }
   }
 
@@ -93,7 +89,7 @@ const App = () => {
         <h3 className='text-8xl'>{shakeCount}</h3>
 
         {iosDevice &&
-          <button onClick={isPermissionSupported} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Give permission</button>
+          <button onClick={handlePermissionRequest} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Give permission</button>
         }
 
         <button onClick={resetCounter} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Reset Count</button>
