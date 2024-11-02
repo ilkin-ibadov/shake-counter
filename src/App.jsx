@@ -96,7 +96,7 @@ function App() {
         window.removeEventListener('devicemotion', handleMotionEvent);
       }
     };
-  }, [isPermissionGranted]);
+  }, [isPermissionGranted, lastX, lastY, lastZ]);
 
   useEffect(() => {
     if (lastX !== null || lastY !== null || lastZ !== null) {
