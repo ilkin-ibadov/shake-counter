@@ -53,58 +53,49 @@ const App = () => {
   //   };
   // }, [lastX, lastY, lastZ])
 
+  const handleMotionEvent = (event) => {
+    const { acceleration } = event;
+
+    if (acceleration) {
+      const { x, y, z } = acceleration;
+
+      if (lastX !== null && lastY !== null && lastZ !== null) {
+        const deltaX = Math.abs(x - lastX);
+        const deltaY = Math.abs(y - lastY);
+        const deltaZ = Math.abs(z - lastZ);
+
+        if (deltaX > shakeThreshold || deltaY > shakeThreshold || deltaZ > shakeThreshold) {
+          setShakeCount(prevCount => prevCount + 1);
+        }
+      }
+
+      setLastX(x);
+      setLastY(y);
+      setLastZ(z);
+    }
+  };
+
+  const initializeShakeDetection = async () => {
+    if (typeof (DeviceMotionEvent) !== 'undefined' && typeof (DeviceMotionEvent.requestPermission) === 'function') {
+      DeviceMotionEvent.requestPermission()
+        .then(response => {
+          if (response == "granted") {
+            window.addEventListener("devicemotion", (event) => {
+              handleMotionEvent(event)
+            })
+          } else {
+            alert("Permission not granted")
+          }
+        })
+        .catch(console.error)
+    }
+    else {
+      alert("Permission not supported")
+    }
+  }
 
   useEffect(() => {
-    let isSensorAvailable = true;
-
-    const handleMotionEvent = (event) => {
-      const { acceleration } = event;
-
-      if (acceleration) {
-        const { x, y, z } = acceleration;
-
-        if (lastX !== null && lastY !== null && lastZ !== null) {
-          const deltaX = Math.abs(x - lastX);
-          const deltaY = Math.abs(y - lastY);
-          const deltaZ = Math.abs(z - lastZ);
-
-          if (deltaX > shakeThreshold || deltaY > shakeThreshold || deltaZ > shakeThreshold) {
-            setShakeCount(prevCount => prevCount + 1);
-          }
-        }
-
-        setLastX(x);
-        setLastY(y);
-        setLastZ(z);
-      }
-    };
-
-    const initializeShakeDetection = async () => {
-      if (typeof (DeviceMotionEvent) !== 'undefined' && typeof (DeviceMotionEvent.requestPermission) === 'function') {
-        DeviceMotionEvent.requestPermission()
-          .then(response => {
-            if (response == "granted") {
-              window.addEventListener("devicemotion", (event) => {
-                handleMotionEvent(event)
-              })
-            } else {
-              alert("Permission not granted")
-            }
-          })
-          .catch(console.error)
-      }
-      else {
-        alert("Permission not supported")
-      }
-    }
-
     initializeShakeDetection();
-
-    // return () => {
-    //   if (isSensorAvailable) {
-    //     window.removeEventListener('devicemotion', handleMotionEvent);
-    //   }
-    // };
   }, [lastX, lastY, lastZ]);
 
   return (
