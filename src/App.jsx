@@ -80,18 +80,18 @@ const App = () => {
     };
 
     const initializeShakeDetection = async () => {
-      if (typeof (DeviceMotionEvent) !== 'undefined' && typeof (DeviceMotionEvent.requestPermission) === 'function') {
-        try {
-          const permission = await DeviceMotionEvent.requestPermission();
-          if (permission === 'granted') {
-            window.addEventListener('devicemotion', handleMotionEvent);
-          }
-        } catch (err) {
-          setError("Error requesting permission for accelerometer.");
-          isSensorAvailable = false;
-        }
-      }
-    };
+      if (typeof (DeviceMotionEvent) !== "undefined" && typeof (DeviceMotionEvent.requestPermission) === "function") {
+        DeviceMotionEvent.requestPermission()
+          .then(response => {
+            if (response == "granted") {
+              window.addEventListener("devicemotion", (event) => {
+                handleMotionEvent(event)
+              })
+            }
+          })
+          .catch(console.error)
+      };
+    }
 
     initializeShakeDetection();
 
