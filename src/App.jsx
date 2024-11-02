@@ -34,21 +34,22 @@ const App = () => {
 
   const handlePermissionRequest = async () => {
     try {
-        const response = await DeviceMotionEvent.requestPermission()
-        if (response == "granted") {
-            window.addEventListener("devicemotion", (event) => {
-                handleMotionEvent(event)
-            })
-        } else {
-            alert("Permission not granted")
-        }
+      const response = await DeviceMotionEvent.requestPermission()
+      if (response == "granted") {
+        window.addEventListener("devicemotion", (event) => {
+          handleMotionEvent(event)
+        })
+      } else {
+        alert("Permission not granted")
+      }
     } catch (error) {
-        console.error(error)
+      console.error(error)
     }
-}
+  }
 
   const findIfNewerThanIOS13 = async () => {
     if (typeof (DeviceMotionEvent) !== 'undefined' && typeof (DeviceMotionEvent.requestPermission) === 'function') {
+      console.log("run")
       setIosDevice(true)
       alert("IOS Version >13 detected", "In order for shake detection to work, please click the 'Give permission' button and accept the permission request")
     }
@@ -64,10 +65,11 @@ const App = () => {
         <h1 className='text-4xl'>Shake count:</h1>
         <h3 className='text-8xl'>{shakeCount}</h3>
 
-       {iosDevice ?? <IosPermissionBtn handlePermissionRequest={handlePermissionRequest}/>}
+        {iosDevice &&
+          <button onClick={handlePermissionRequest} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Give permission</button>}
 
         <button onClick={() => { setShakeCount(0) }} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Reset Count</button>
-        {error ?? (
+        {error && (
           <p style={{ color: 'red' }}>{error}</p>
         )}
       </div>
