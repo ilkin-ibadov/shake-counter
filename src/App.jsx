@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import AdjustSlider from './components/AdjustSlider';
+import Button from './components/Button';
 
 function App() {
   const [shakeCount, setShakeCount] = useState(0);
@@ -8,8 +10,9 @@ function App() {
   const [isAccelerometerSupported, setIsAccelerometerSupported] = useState(true);
   const [isPermissionGranted, setIsPermissionGranted] = useState(false);
   const [iosDevice, setIosDevice] = useState(false)
-  const [shakeThreshold, setThreshold] = useState(20)
-  const [sliderOpen, setSliderOpen] = useState(false)
+  const [shakeThreshold, setShakeThreshold] = useState(25)
+  const [shakeInProgress, setShakeInProgress] = useState(false)
+  const [isSliderVisible, setIsSliderVisible] = useState(false)
 
   function checkIfIOS13OrLater() {
     const userAgent = navigator.userAgent || window.opera;
@@ -88,6 +91,13 @@ function App() {
       window.addEventListener('devicemotion', handleMotionEvent);
     }
 
+    if (lastX !== null || lastY !== null || lastZ !== null) {
+      setShakeInProgress(true);
+      const timer = setTimeout(() => setShakeInProgress(false), 300);
+      
+      return () => clearTimeout(timer);
+    }
+
     return () => {
       if (isPermissionGranted) {
         window.removeEventListener('devicemotion', handleMotionEvent);
@@ -96,7 +106,7 @@ function App() {
   }, [isPermissionGranted, lastX, lastY, lastZ]);
 
   return (
-    <div className='w-full h-screen bg-blue-300 flex items-center justify-center'>
+    <div className={`w-full h-screen transition duration-300 ease-in-out ${shakeInProgress ? "bg-orange-400" : "bg-blue-300"} flex items-center justify-center`}>
       {
         isAccelerometerSupported ? (
           <div className='flex flex-col items-center gap-3'>
@@ -104,38 +114,28 @@ function App() {
             <h3 className='text-8xl'>{shakeCount}</h3>
 
             {(!isPermissionGranted && iosDevice) &&
-              <button onClick={() => {
-                handlePermissionRequest()
-              }} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Give permission</button>
+              <Button title="Give permission" action={
+                () => {
+                  handlePermissionRequest()
+                }
+              } />
             }
 
-            <button onClick={() => {
+            <Button title="Reset Count" action={() => {
               setShakeCount(0)
-              setSliderOpen(false)
-              setThreshold(20)
-            }} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Reset Count</button>
+              setIsSliderVisible(false)
+              setShakeThreshold(25)
+            }} />
 
             {
-              sliderOpen ? (
-                <>
-                  <label htmlFor="sensitivity">Adjust shake sensitivity</label>
-                  <input onChange={(e) => {
-                    setThreshold(e.target.value)
-                  }} name='sensitivity' type="range" min="15" max="50" value={shakeThreshold} />
-                </>
-              ) : (
-                <button onClick={() => {
-                  setSliderOpen(true)
-                }} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Adjust sensitivity</button>
-              )
+              isSliderVisible ? <AdjustSlider shakeThreshold={shakeThreshold} setShakeThreshold={setShakeThreshold} /> :
+                <Button title="Adjust sensitivity" action={() => { setIsSliderVisible(true) }} />
             }
           </div>
         ) : (
           <p className='text-2xl text-red-600'>Accelerometer not supported on this device.</p>
         )
       }
-
-
     </div>
   );
 }
