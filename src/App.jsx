@@ -6,7 +6,7 @@ const App = () => {
   const [lastX, setLastX] = useState(null);
   const [lastY, setLastY] = useState(null);
   const [lastZ, setLastZ] = useState(null);
-  const [iosDevice, setIosDevice] = useState(null)
+  const [iosDevice, setIosDevice] = useState(false)
   const shakeThreshold = 20;
 
   function checkIfIOS13OrLater() {
@@ -21,10 +21,7 @@ const App = () => {
         if (version >= 13) {
           setIosDevice(true)
           alert("Click button to give permission")
-        } else {
-          handlePermissionRequest()
         }
-
       }
     }
   }
@@ -78,6 +75,10 @@ const App = () => {
     checkIfIOS13OrLater()
   }, []);
 
+  useEffect(() => {
+    handlePermissionRequest()
+  }, [lastX, lastY, lastZ])
+
   return (
     <div className='w-full h-screen bg-blue-300 flex items-center justify-center'>
       <div className='flex flex-col items-center gap-3'>
@@ -85,7 +86,7 @@ const App = () => {
         <h3 className='text-8xl'>{shakeCount}</h3>
 
         {iosDevice &&
-          <button onClick={() => { 
+          <button onClick={() => {
             handlePermissionRequest()
           }} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Give permission</button>
         }
