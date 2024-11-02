@@ -7,7 +7,25 @@ function App() {
   const [lastZ, setLastZ] = useState(null);
   const [error, setError] = useState(null);
   const [isPermissionGranted, setIsPermissionGranted] = useState(false);
+  const [iosDevice, setIosDevice] = useState(false)
   const shakeThreshold = 15;
+
+  function checkIfIOS13OrLater() {
+    const userAgent = navigator.userAgent || window.opera;
+
+    // Check if it is an iOS device
+    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+      // Check for iOS version
+      const match = userAgent.match(/OS (\d+)_/); // Extract version number
+      if (match && match.length > 1) {
+        const version = parseInt(match[1], 10);
+        if (version >= 13) {
+          setIosDevice(true)
+          alert("Click button to give permission")
+        }
+      }
+    }
+  }
 
   // Function to detect shake based on acceleration data
   const handleMotionEvent = (event) => {
@@ -58,6 +76,14 @@ function App() {
   };
 
   useEffect(() => {
+    /* IOS 13+ requests us to put the permission asking action on an event like a click,
+    so we check if the device is IOS 13 or later. If it is, a button is displayed and
+    user is asked to click it. If it's not, request for permission happens automatically */
+
+    checkIfIOS13OrLater()
+  }, []);
+
+  useEffect(() => {
     if (isPermissionGranted) {
       window.addEventListener('devicemotion', handleMotionEvent);
     }
@@ -70,18 +96,22 @@ function App() {
   }, [isPermissionGranted, lastX, lastY, lastZ]);
 
   return (
-    <div style={{ textAlign: 'center', marginTop: '20px' }}>
-      <h1>Shake Detector</h1>
-      {error ? (
-        <p style={{ color: 'red' }}>{error}</p>
-      ) : (
-        <p>Shake Count: {shakeCount}</p>
-      )}
-      {!isPermissionGranted && (
-        <button onClick={handlePermissionRequest} style={{ marginTop: '20px', padding: '10px' }}>
-          Enable Shake Detection
-        </button>
-      )}
+    <div className='w-full h-screen bg-blue-300 flex items-center justify-center'>
+      <div className='flex flex-col items-center gap-3'>
+        <h1 className='text-4xl'>Shake count:</h1>
+        <h3 className='text-8xl'>{shakeCount}</h3>
+
+        {iosDevice &&
+          <button onClick={() => {
+            handlePermissionRequest()
+          }} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Give permission</button>
+        }
+
+        <button onClick={() => {
+          setShakeCount(0)
+        }} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Reset Count</button>
+      </div>
+
     </div>
   );
 }
