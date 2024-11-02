@@ -33,17 +33,7 @@ const App = () => {
   const initializeShakeDetection = async () => {
     if (typeof (DeviceMotionEvent) !== 'undefined' && typeof (DeviceMotionEvent.requestPermission) === 'function') {
       alert("device supported")
-      DeviceMotionEvent.requestPermission()
-        .then(response => {
-          if (response == "granted") {
-            window.addEventListener("devicemotion", (event) => {
-              handleMotionEvent(event)
-            })
-          } else {
-            alert("Permission not granted")
-          }
-        })
-        .catch(console.error)
+
     }
     else {
       alert("Permission not supported")
@@ -59,6 +49,20 @@ const App = () => {
       <div className='flex flex-col items-center gap-3'>
         <h1 className='text-4xl'>Shake count:</h1>
         <h3 className='text-8xl'>{shakeCount}</h3>
+        <button onClick={() => {
+          DeviceMotionEvent.requestPermission()
+            .then(response => {
+              if (response == "granted") {
+                window.addEventListener("devicemotion", (event) => {
+                  handleMotionEvent(event)
+                })
+              } else {
+                alert("Permission not granted")
+              }
+            })
+            .catch(console.error)
+        }} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Get Permission</button>
+
         <button onClick={() => { setShakeCount(0) }} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Reset Count</button>
         {error ?? (
           <p style={{ color: 'red' }}>{error}</p>
