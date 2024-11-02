@@ -42,18 +42,30 @@ const App = () => {
     //   }
     // }
 
-    function handleOrientation(event) {
-      var absolute = event.absolute;
-      var alpha    = event.alpha;
-      var beta     = event.beta;
-      var gamma    = event.gamma;
-      setLastX(alpha)
-      setLastY(beta)
-      setLastZ(gamma)
-      // Do stuff with the new orientation data
-    }
+    // function handleOrientation(event) {
+    //   var absolute = event.absolute;
+    //   var alpha    = event.alpha;
+    //   var beta     = event.beta;
+    //   var gamma    = event.gamma;
+    //   setLastX(alpha)
+    //   setLastY(beta)
+    //   setLastZ(gamma)
+    //   // Do stuff with the new orientation data
+    // }
 
-    window.addEventListener("deviceorientation", handleOrientation, true);
+    // window.addEventListener("deviceorientation", handleOrientation, true);
+
+    if (typeof(DeviceMotionEvent) !== 'undefined' && typeof(DeviceMotionEvent.requestPermission) === 'function')
+      {
+        setLastX("supported")
+          // iOS 13 device (supports the Permissions API)
+      }
+      else
+      {
+        setLastX("not supported")
+
+          // other devices
+      }
 
   }, [])
 
@@ -124,7 +136,7 @@ const App = () => {
     <div className='w-full h-screen bg-blue-300 flex items-center justify-center'>
       <div className='flex flex-col items-center gap-3'>
         <h1 className='text-4xl'>Shake count:</h1>
-        <h3 className='text-8xl'>{lastX} {lastY} {lastZ}</h3>
+        <h3 className='text-8xl'>{lastX}</h3>
         <button onClick={() => { setShakeCount(0) }} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Reset Count</button>
         {error ?? (
           <p style={{ color: 'red' }}>{error}</p>
