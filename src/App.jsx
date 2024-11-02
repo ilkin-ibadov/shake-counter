@@ -57,7 +57,6 @@ const App = () => {
   useEffect(() => {
     let isSensorAvailable = true;
 
-    // Function to detect shake based on acceleration data
     const handleMotionEvent = (event) => {
       const { acceleration } = event;
 
@@ -80,29 +79,17 @@ const App = () => {
       }
     };
 
-    // Check for sensor support and permissions
     const initializeShakeDetection = async () => {
-      if (typeof DeviceMotionEvent === 'undefined') {
-        setError("Accelerometer not supported on this device.");
-        isSensorAvailable = false;
-        return;
-      }
-
-      if (typeof DeviceMotionEvent.requestPermission === 'function') {
+      if (typeof (DeviceMotionEvent) !== 'undefined' && typeof (DeviceMotionEvent.requestPermission) === 'function') {
         try {
           const permission = await DeviceMotionEvent.requestPermission();
-          if (permission !== 'granted') {
-            setError("Permission to access accelerometer was denied.");
-            isSensorAvailable = false;
+          if (permission === 'granted') {
+            window.addEventListener('devicemotion', handleMotionEvent);
           }
         } catch (err) {
           setError("Error requesting permission for accelerometer.");
           isSensorAvailable = false;
         }
-      }
-
-      if (isSensorAvailable) {
-        window.addEventListener('devicemotion', handleMotionEvent);
       }
     };
 
