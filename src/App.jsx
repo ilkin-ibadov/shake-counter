@@ -8,51 +8,6 @@ const App = () => {
   const [error, setError] = useState(null); // To store any error messages
   const shakeThreshold = 10;
 
-  // const handleMotionEvent = (event) => {
-  //   const { acceleration } = event;
-
-  //   if (acceleration) {
-  //     const { x, y, z } = acceleration;
-
-  //     if (lastX !== null && lastY !== null && lastZ !== null) {
-  //       const deltaX = Math.abs(x - lastX);
-  //       const deltaY = Math.abs(y - lastY);
-  //       const deltaZ = Math.abs(z - lastZ);
-
-  //       if (deltaX > shakeThreshold || deltaY > shakeThreshold || deltaZ > shakeThreshold) {
-  //         setShakeCount(prevCount => prevCount + 1);
-  //       }
-  //     }
-
-  //     setLastX(x);
-  //     setLastY(y);
-  //     setLastZ(z);
-  //   }
-  // };
-
-  // useEffect(() => {
-
-  //   if (typeof (DeviceMotionEvent) !== 'undefined' && typeof (DeviceMotionEvent.requestPermission) === 'function') {
-  //     DeviceMotionEvent.requestPermission()
-  //       .then(response => {
-  //         if (response == "granted") {
-  //           window.addEventListener("devicemotion", (event) => {
-  //             handleMotionEvent(event)
-  //           })
-  //         }
-  //       })
-  //   }
-  //   else {
-  //     alert("not supported")
-  //   }
-
-  //   return () => {
-  //     if (isSensorAvailable) {
-  //       window.removeEventListener('devicemotion', handleMotionEvent);
-  //     }
-  //   };
-  // }, [lastX, lastY, lastZ])
-
   const handleMotionEvent = (event) => {
     const { acceleration } = event;
 
@@ -77,6 +32,7 @@ const App = () => {
 
   const initializeShakeDetection = async () => {
     if (typeof (DeviceMotionEvent) !== 'undefined' && typeof (DeviceMotionEvent.requestPermission) === 'function') {
+      alert("device supported")
       DeviceMotionEvent.requestPermission()
         .then(response => {
           if (response == "granted") {
