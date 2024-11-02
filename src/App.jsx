@@ -34,8 +34,8 @@ const App = () => {
 
   const findIfNewerThanIOS13 = async () => {
     if (typeof (DeviceMotionEvent) !== 'undefined' && typeof (DeviceMotionEvent.requestPermission) === 'function') {
-      alert("IOS Version >13 detected", "In order for shake detection to work, please click the 'Give permission' button and accept the permission request")
       setIosDevice(true)
+      alert("IOS Version >13 detected", "In order for shake detection to work, please click the 'Give permission' button and accept the permission request")
     }
   }
 
