@@ -1,6 +1,6 @@
 # Shake detection app made with React
 
-This app uses built in Javascript APIs to detect shakes and increments the counter accordingly. It has a slider to adjust the sensitivity of the shake detection and a button to reset the counter.
+This app uses built in Javascript APIs to detect shakes (gesture that twists the device on 2 or more axis) and increments the counter accordingly. It has a slider to adjust the sensitivity of the shake detection and a button to reset the counter.
 
 To run the app:
 git clone git@github.com:ilkin-ibadov/shake-counter.git
