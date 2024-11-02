@@ -52,12 +52,12 @@ function App() {
 
   // Request permission to access accelerometer (for iOS 13+)
   const handlePermissionRequest = async () => {
-    if (typeof DeviceMotionEvent === 'undefined') {
-      setIsAccelerometerSupported(false)
-      return;
-    }
+    // if () {
 
-    if (typeof DeviceMotionEvent.requestPermission === 'function') {
+    //   return;
+    // }
+
+    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
       try {
         const permission = await DeviceMotionEvent.requestPermission();
         if (permission === 'granted') {
@@ -67,7 +67,7 @@ function App() {
           alert("Permission to access accelerometer was denied.");
         }
       } catch (err) {
-        alert("Error requesting permission for accelerometer.");
+        setIsAccelerometerSupported(false)
       }
     } else {
       // For devices that don't require explicit permission (e.g., Android)
@@ -100,24 +100,24 @@ function App() {
       {
         isAccelerometerSupported ? (
           <div className='flex flex-col items-center gap-3'>
-        <h1 className='text-4xl'>Shake count:</h1>
-        <h3 className='text-8xl'>{shakeCount}</h3>
+            <h1 className='text-4xl'>Shake count:</h1>
+            <h3 className='text-8xl'>{shakeCount}</h3>
 
-        {(!isPermissionGranted && iosDevice) &&
-          <button onClick={() => {
-            handlePermissionRequest()
-          }} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Give permission</button>
-        }
+            {(!isPermissionGranted && iosDevice) &&
+              <button onClick={() => {
+                handlePermissionRequest()
+              }} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Give permission</button>
+            }
 
-        <button onClick={() => {
-          setShakeCount(0)
-        }} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Reset Count</button>
-      </div>
+            <button onClick={() => {
+              setShakeCount(0)
+            }} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Reset Count</button>
+          </div>
         ) : (
           <p className='text-2xl text-red-600'>Accelerometer not supported on this device.</p>
         )
       }
-      
+
 
     </div>
   );
