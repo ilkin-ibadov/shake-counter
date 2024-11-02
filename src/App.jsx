@@ -7,8 +7,13 @@ const App = () => {
   const [lastY, setLastY] = useState(null);
   const [lastZ, setLastZ] = useState(null);
   const [error, setError] = useState(null); // To store any error messages
+  const [permissionGiven, setPermissionGiven] = useState(false)
   const [iosDevice, setIosDevice] = useState(null)
-  const shakeThreshold = 50;
+  const shakeThreshold = 20;
+
+  const resetCounter = () => {
+    setShakeCount(0)
+  }
 
   const handleMotionEvent = (event) => {
     const { acceleration } = event;
@@ -32,6 +37,15 @@ const App = () => {
     }
   };
 
+  const findIfNewerThanIOS13 = async () => {
+    if (typeof (DeviceMotionEvent) !== 'undefined' && typeof (DeviceMotionEvent.requestPermission) === 'function') {
+      setIosDevice(true)
+      alert("IOS Version >13 detected", "In order for shake detection to work, please click the 'Give permission' button and accept the permission request")
+    } else {
+      handlePermissionRequest()
+    }
+  }
+
   const handlePermissionRequest = async () => {
     try {
       const response = await DeviceMotionEvent.requestPermission()
@@ -40,24 +54,21 @@ const App = () => {
           handleMotionEvent(event)
         })
       } else {
-        alert("Permission not granted")
+        alert("Permission denied")
       }
     } catch (error) {
       console.error(error)
     }
   }
 
-  const findIfNewerThanIOS13 = async () => {
-    if (typeof (DeviceMotionEvent) !== 'undefined' && typeof (DeviceMotionEvent.requestPermission) === 'function') {
-      console.log("run")
-      setIosDevice(true)
-      alert("IOS Version >13 detected", "In order for shake detection to work, please click the 'Give permission' button and accept the permission request")
-    }
-  }
-
   useEffect(() => {
-    findIfNewerThanIOS13();
+    findIfNewerThanIOS13()
   }, []);
+
+  // useEffect(() => {
+  //   handleMotionEvent
+  // }, [lastX, lastY, lastZ])
+
 
   return (
     <div className='w-full h-screen bg-blue-300 flex items-center justify-center'>
@@ -66,12 +77,10 @@ const App = () => {
         <h3 className='text-8xl'>{shakeCount}</h3>
 
         {iosDevice &&
-          <button onClick={handlePermissionRequest} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Give permission</button>}
+          <button onClick={handlePermissionRequest} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Give permission</button>
+        }
 
-        <button onClick={() => { setShakeCount(0) }} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Reset Count</button>
-        {error && (
-          <p style={{ color: 'red' }}>{error}</p>
-        )}
+        <button onClick={resetCounter} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Reset Count</button>
       </div>
 
     </div>
