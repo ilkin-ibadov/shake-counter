@@ -6,7 +6,8 @@ const App = () => {
   const [lastY, setLastY] = useState(null);
   const [lastZ, setLastZ] = useState(null);
   const [error, setError] = useState(null); // To store any error messages
-  const shakeThreshold = 10;
+  const [iosDevice, setIosDevice] = useState(null)
+  const shakeThreshold = 50;
 
   const handleMotionEvent = (event) => {
     const { acceleration } = event;
@@ -30,38 +31,24 @@ const App = () => {
     }
   };
 
-  const initializeShakeDetection = async () => {
+  const findIfNewerThanIOS13 = async () => {
     if (typeof (DeviceMotionEvent) !== 'undefined' && typeof (DeviceMotionEvent.requestPermission) === 'function') {
-      alert("device supported")
-
-    }
-    else {
-      alert("Permission not supported")
+      alert("IOS Version >13 detected", "In order for shake detection to work, please click the 'Give permission' button and accept the permission request")
+      setIosDevice(true)
     }
   }
 
   useEffect(() => {
-    initializeShakeDetection();
-  }, [lastX, lastY, lastZ]);
+    findIfNewerThanIOS13();
+  }, []);
 
   return (
     <div className='w-full h-screen bg-blue-300 flex items-center justify-center'>
       <div className='flex flex-col items-center gap-3'>
         <h1 className='text-4xl'>Shake count:</h1>
         <h3 className='text-8xl'>{shakeCount}</h3>
-        <button onClick={() => {
-          DeviceMotionEvent.requestPermission()
-            .then(response => {
-              if (response == "granted") {
-                window.addEventListener("devicemotion", (event) => {
-                  handleMotionEvent(event)
-                })
-              } else {
-                alert("Permission not granted")
-              }
-            })
-            .catch(console.error)
-        }} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Get Permission</button>
+
+       {iosDevice ?? <IosPermissionBtn handleMotionEvent={handleMotionEvent}/>}
 
         <button onClick={() => { setShakeCount(0) }} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Reset Count</button>
         {error ?? (
