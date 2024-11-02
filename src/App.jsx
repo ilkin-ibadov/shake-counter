@@ -44,6 +44,7 @@ function App() {
         const deltaZ = Math.abs(z - lastZ);
 
         if (deltaX > shakeThreshold || deltaY > shakeThreshold || deltaZ > shakeThreshold) {
+          setShakeInProgress(true);
           setShakeCount(prevCount => prevCount + 1);
         }
       }
@@ -99,13 +100,10 @@ function App() {
   }, [isPermissionGranted, lastX, lastY, lastZ]);
 
   useEffect(() => {
-    if (lastX !== null || lastY !== null || lastZ !== null) {
-      setShakeInProgress(true);
       const timer = setTimeout(() => setShakeInProgress(false), 300);
 
       return () => clearTimeout(timer);
-    }
-  }, [lastX, lastY, lastZ])
+  }, [shakeCount])
 
 
   return (
