@@ -5,10 +5,10 @@ function App() {
   const [lastX, setLastX] = useState(null);
   const [lastY, setLastY] = useState(null);
   const [lastZ, setLastZ] = useState(null);
-  const [error, setError] = useState(null);
+  const [isAccelerometerSupported, setIsAccelerometerSupported] = useState(true);
   const [isPermissionGranted, setIsPermissionGranted] = useState(false);
   const [iosDevice, setIosDevice] = useState(false)
-  const shakeThreshold = 15;
+  const shakeThreshold = 20;
 
   function checkIfIOS13OrLater() {
     const userAgent = navigator.userAgent || window.opera;
@@ -53,7 +53,7 @@ function App() {
   // Request permission to access accelerometer (for iOS 13+)
   const handlePermissionRequest = async () => {
     if (typeof DeviceMotionEvent === 'undefined') {
-      setError("Accelerometer not supported on this device.");
+      setIsAccelerometerSupported(false)
       return;
     }
 
@@ -64,10 +64,10 @@ function App() {
           setIsPermissionGranted(true);
           setError(null); // Clear any previous error
         } else {
-          setError("Permission to access accelerometer was denied.");
+          alert("Permission to access accelerometer was denied.");
         }
       } catch (err) {
-        setError("Error requesting permission for accelerometer.");
+        alert("Error requesting permission for accelerometer.");
       }
     } else {
       // For devices that don't require explicit permission (e.g., Android)
@@ -97,7 +97,9 @@ function App() {
 
   return (
     <div className='w-full h-screen bg-blue-300 flex items-center justify-center'>
-      <div className='flex flex-col items-center gap-3'>
+      {
+        isAccelerometerSupported ? (
+          <div className='flex flex-col items-center gap-3'>
         <h1 className='text-4xl'>Shake count:</h1>
         <h3 className='text-8xl'>{shakeCount}</h3>
 
@@ -111,6 +113,11 @@ function App() {
           setShakeCount(0)
         }} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Reset Count</button>
       </div>
+        ) : (
+          <p className='text-2xl text-red-600'>Accelerometer not supported on this device.</p>
+        )
+      }
+      
 
     </div>
   );
