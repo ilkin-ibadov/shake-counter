@@ -80,26 +80,31 @@ const App = () => {
     };
 
     const initializeShakeDetection = async () => {
-      if (typeof (DeviceMotionEvent) !== "undefined" && typeof (DeviceMotionEvent.requestPermission) === "function") {
+      if (typeof (DeviceMotionEvent) !== 'undefined' && typeof (DeviceMotionEvent.requestPermission) === 'function') {
         DeviceMotionEvent.requestPermission()
           .then(response => {
             if (response == "granted") {
               window.addEventListener("devicemotion", (event) => {
                 handleMotionEvent(event)
               })
+            } else {
+              alert("Permission not granted")
             }
           })
           .catch(console.error)
-      };
+      }
+      else {
+        alert("Permission not supported")
+      }
     }
 
     initializeShakeDetection();
 
-    return () => {
-      if (isSensorAvailable) {
-        window.removeEventListener('devicemotion', handleMotionEvent);
-      }
-    };
+    // return () => {
+    //   if (isSensorAvailable) {
+    //     window.removeEventListener('devicemotion', handleMotionEvent);
+    //   }
+    // };
   }, [lastX, lastY, lastZ]);
 
   return (
