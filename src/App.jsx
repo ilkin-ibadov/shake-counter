@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import IosPermissionBtn from './components/IosPermissionBtn';
 
 const App = () => {
   const [shakeCount, setShakeCount] = useState(0)
