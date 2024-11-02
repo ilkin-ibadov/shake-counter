@@ -29,10 +29,6 @@ const App = () => {
     }
   }
 
-  const resetCounter = () => {
-    setShakeCount(0)
-  }
-
   const handleMotionEvent = (event) => {
     const { acceleration } = event;
 
@@ -89,10 +85,14 @@ const App = () => {
         <h3 className='text-8xl'>{shakeCount}</h3>
 
         {iosDevice &&
-          <button onClick={handlePermissionRequest} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Give permission</button>
+          <button onClick={() => { 
+            handlePermissionRequest()
+          }} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Give permission</button>
         }
 
-        <button onClick={resetCounter} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Reset Count</button>
+        <button onClick={() => {
+          setShakeCount(0)
+        }} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Reset Count</button>
       </div>
 
     </div>
