@@ -8,7 +8,8 @@ function App() {
   const [isAccelerometerSupported, setIsAccelerometerSupported] = useState(true);
   const [isPermissionGranted, setIsPermissionGranted] = useState(false);
   const [iosDevice, setIosDevice] = useState(false)
-  const shakeThreshold = 20;
+  const [shakeThreshold, setThreshold] = useState(20)
+  const [sliderOpen, setSliderOpen] = useState(false)
 
   function checkIfIOS13OrLater() {
     const userAgent = navigator.userAgent || window.opera;
@@ -52,22 +53,21 @@ function App() {
 
   // Request permission to access accelerometer (for iOS 13+)
   const handlePermissionRequest = async () => {
-    // if () {
+    if (typeof DeviceMotionEvent === 'undefined') {
+      setIsAccelerometerSupported(false)
+      return;
+    }
 
-    //   return;
-    // }
-
-    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+    if (typeof DeviceMotionEvent.requestPermission === 'function') {
       try {
         const permission = await DeviceMotionEvent.requestPermission();
         if (permission === 'granted') {
           setIsPermissionGranted(true);
-          setError(null); // Clear any previous error
         } else {
           alert("Permission to access accelerometer was denied.");
         }
       } catch (err) {
-        setIsAccelerometerSupported(false)
+        alert("Error requesting permission for accelerometer.");
       }
     } else {
       // For devices that don't require explicit permission (e.g., Android)
@@ -111,7 +111,24 @@ function App() {
 
             <button onClick={() => {
               setShakeCount(0)
+              setSliderOpen(false)
+              setThreshold(20)
             }} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Reset Count</button>
+
+            {
+              sliderOpen ? (
+                <>
+                  <label htmlFor="sensitivity">Adjust shake sensitivity</label>
+                  <input onChange={(e) => {
+                    setThreshold(e.target.value)
+                  }} name='sensitivity' type="range" min="15" max="50" value={shakeThreshold} />
+                </>
+              ) : (
+                <button onClick={() => {
+                  setSliderOpen(true)
+                }} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Adjust sensitivity</button>
+              )
+            }
           </div>
         ) : (
           <p className='text-2xl text-red-600'>Accelerometer not supported on this device.</p>
