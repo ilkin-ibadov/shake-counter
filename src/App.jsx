@@ -32,6 +32,21 @@ const App = () => {
     }
   };
 
+  const handlePermissionRequest = async () => {
+    try {
+        const response = await DeviceMotionEvent.requestPermission()
+        if (response == "granted") {
+            window.addEventListener("devicemotion", (event) => {
+                handleMotionEvent(event)
+            })
+        } else {
+            alert("Permission not granted")
+        }
+    } catch (error) {
+        console.error(error)
+    }
+}
+
   const findIfNewerThanIOS13 = async () => {
     if (typeof (DeviceMotionEvent) !== 'undefined' && typeof (DeviceMotionEvent.requestPermission) === 'function') {
       setIosDevice(true)
@@ -49,7 +64,7 @@ const App = () => {
         <h1 className='text-4xl'>Shake count:</h1>
         <h3 className='text-8xl'>{shakeCount}</h3>
 
-       {iosDevice ?? <IosPermissionBtn handleMotionEvent={handleMotionEvent}/>}
+       {iosDevice ?? <IosPermissionBtn handlePermissionRequest={handlePermissionRequest}/>}
 
         <button onClick={() => { setShakeCount(0) }} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Reset Count</button>
         {error ?? (
