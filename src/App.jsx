@@ -101,11 +101,11 @@ function App() {
         <h1 className='text-4xl'>Shake count:</h1>
         <h3 className='text-8xl'>{shakeCount}</h3>
 
-        {iosDevice &&
+        
           <button onClick={() => {
             handlePermissionRequest()
           }} className='px-5 py-3 bg-blue-600 rounded-2xl text-base text-white mt-2'>Give permission</button>
-        }
+      
 
         <button onClick={() => {
           setShakeCount(0)
